@@ -4,11 +4,6 @@
 ################### FREE - BlackList Check v0.1 - under GPLv3 ###################
 #################################################################################
 
-##########################################################
-#  INFORMATIONS                                          #
-#   Group 1	                                         #
-##########################################################
-
 #######################
 ### Preparing tasks ###
 #######################
@@ -25,7 +20,7 @@ funcCheckProg() {
 	local _count
 	local _i
 
-	_program=(python3 vi emacs)
+	_program=(vi)
 	for _i in "${_program[@]}"; do
 		if [ -z $(command -v ${_i}) ]; then
 			echo "${_i} is not installed."
@@ -38,29 +33,6 @@ funcCheckProg() {
 	fi
 }
 
-#Check if a program is installed via an input file.
-funcCheckProg() {
-	local _program
-	local _proginst
-	local _count
-	local _line
-
-	while read _line
-	do
-		_program=$(echo "${_line}" | awk -F ';;' '{print $1}')
-		_proginst=$(echo "${_line}" | awk -F ';;' '{print $2}')
-
-		if [ -z $(command -v ${_program}) ]; then
-			echo "${_program} is not installed. Installation: ${_proginst}"
-			_count=1
-		fi
-
-	done <./commandcheck.txt
-
-	if [[ ${_count} -eq 1 ]]; then
-		exit
-	fi
-}
 
 funcCheckProg
 
@@ -68,9 +40,9 @@ funcCheckProg
 _TIME=$(date +%d.%m.%Y-%H:%M)
 
 #Check if a folder exists and create otherwise.
-if ! [ -d "./inputs/temp" ]; then
-	mkdir ./inputs/temp
-fi
+#if ! [ -d "./inputs/temp" ]; then
+#	mkdir ./inputs/temp
+#fi
 
 
 ############################
@@ -85,11 +57,12 @@ fi
 ###############################
 
 funcHelp() {
-	echo "From the Free OCSAF project"
-	echo "Free OCSAF SKELETON 0.4 - GPLv3 (https://freecybersecurity.org)"
+	echo "MX Record and Blacklist Checker"
+	echo "GPLv3)"
 	echo "Use only with legal authorization and at your own risk!"
 	echo "ANY LIABILITY WILL BE REJECTED!"
-	echo ""
+	echo "***********************************************************"
+	echo "Usage: "
 }
 
 
@@ -97,21 +70,17 @@ funcHelp() {
 ### GETOPTS - TOOL OPTIONS  ###
 ###############################
 
-while getopts "d:l:hc" opt; do
+while getopts "d:hb" opt; do
 	case ${opt} in
         	h) funcHelp; exit 1;;
-		d) _VALUE="$OPTARG"; _CHECKARG1=1;;
-		l) _LIST="$OPTARG"; _CHECKARG2=1;;
-		c) _COLORS=1;;
-		\?) echo "**Unknown option**" >&2; echo ""; funcHelp; exit 1;;
-        	:) echo "**Missing option argument**" >&2; echo ""; funcHelp; exit 1;;
+		d) _DOMAIN="$OPTARG"; _CHECKARG1=1;;
+		b) funcBlacklist; exit 1;;
 		*) funcHelp; exit 1;;
   	esac
 	done
-    	shift $(( OPTIND - 1 ))
 
 #Check if _CHECKARG1 or/and _CHECKARG2 is set
-if [ "${_CHECKARG1}" == "" ] && [ "${_CHECKARG2}" == "" ]; then
+if [ "${_CHECKARG1}" == "" ]; then
 	echo "**No argument set**"
 	echo ""
 	funcHelp
@@ -124,21 +93,21 @@ fi
 ###############
 
 #Colors directly in the script.
-if [[ ${_COLORS} -eq 1 ]]; then
-	cOFF=''
-	rON=''
-	gON=''
-	yON=''
-else
-	cOFF='\e[39m'	  #color OFF / Default color
-	rON='\e[31m'	  #red color ON
-	gON='\e[32m'	  #green color ON
-	yON='\e[33m'	  #yellow color ON
-fi
+#if [[ ${_COLORS} -eq 1 ]]; then
+#	cOFF=''
+#	rON=''
+#	gON=''
+#	yON=''
+#else
+#	cOFF='\e[39m'	  #color OFF / Default color
+#	rON='\e[31m'	  #red color ON
+#	gON='\e[32m'	  #green color ON
+#	yON='\e[33m'	  #yellow color ON
+#fi
 
 
 #As color library.
-. colors.sh
+#. colors.sh
 
 
 ############################
@@ -149,7 +118,7 @@ fi
 # Naming convention for functions funcFunctionname() - z.B. funcMycheck()
 
 funcMyFunction() {
-
+	echo "Domain = $_DOMAIN"
 }
 
 
@@ -159,8 +128,8 @@ funcMyFunction() {
 
 echo ""
 echo "##########################################"
-echo "####  FREE OCSAF BASH SKELETON GPLv3  ####"
-echo "####  https://freecybersecurity.org   ####"
+echo "####  Blacklist Checker GPLv3	    ####"
+echo "####      Group1 HFI3913		    ####"
 echo "##########################################"
 echo ""
 
