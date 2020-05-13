@@ -117,9 +117,12 @@ fi
 # My function for ...
 # Naming convention for functions funcFunctionname() - z.B. funcMycheck()
 
-funcMyFunction() {
-	echo "Domain = $_DOMAIN"
+funcMXspf(){
+	local _domain=${1}
+        dig +noall +answer +short mx ${_domain} | cut -d " " -f2
+        dig +noall +answer +short txt ${_domain} | grep -i  spf
 }
+
 
 
 ############
@@ -127,21 +130,14 @@ funcMyFunction() {
 ############
 
 echo ""
-echo "##########################################"
-echo "####  Blacklist Checker GPLv3	    ####"
-echo "####      Group1 HFI3913		    ####"
-echo "##########################################"
+echo "####################################"
+echo "####  Blacklist Checker GPLv3	####"
+echo "####  Group1 HFI3913		####"
+echo "####################################"
 echo ""
 
 if [ "${_CHECKARG1}" == "1" ]; then        #For one argument
-	funcMyFunction
-	echo ""
-elif [ "${_CHECKARG2}" == "1" ]; then      #For a list of arguments
-	while read _line
-	do
-		funcMyFunction
-		unset _line
-	done <${_LIST}
+	funcMXspf $_DOMAIN
 	echo ""
 fi
 
