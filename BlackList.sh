@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#################################################################################
-################### FREE - BlackList Check v0.1 - under GPLv3 ###################
-#################################################################################
+# Gruppe1 - Mike, Joel, Matthias, Luca <NR>
+# Basic Script to Check MX/SPF Record of any given domain or/and if the given domain is on a blacklist
+
 
 #######################
 ### Preparing tasks ###
@@ -39,30 +39,44 @@ funcCheckProg
 #Read current date and time in hours and minutes into variable.
 _TIME=$(date +%d.%m.%Y-%H:%M)
 
-#Check if a folder exists and create otherwise.
-#if ! [ -d "./inputs/temp" ]; then
-#	mkdir ./inputs/temp
-#fi
-
-
-############################
-### Integrated functions ###
-############################
-
-#. libraries/
-
-
 ###############################
-### EXAMPLE TOOL USAGE TEXT ###
+######  Basic Functions  ######
 ###############################
 
 funcHelp() {
+	echo ""
+	echo "####################  HELP  ####################"
+	echo "*********************************"
 	echo "MX Record and Blacklist Checker"
-	echo "GPLv3)"
-	echo "Use only with legal authorization and at your own risk!"
-	echo "ANY LIABILITY WILL BE REJECTED!"
-	echo "***********************************************************"
+	echo "GPLv3"
+	echo "*********************************"
+	echo ""
 	echo "Usage: "
+	echo "	./Blacklist.sh -d <DOMAIN> -b -> Blacklist Check"
+	echo "	./Blacklist.sh -d <DOMAIN> -m -> MX and SPF Record Check"
+	echo "	./Blacklist.sh -d <DOMAIN> -> ????"
+	echo ""
+	echo "####################  /HELP  ##################"
+	echo ""
+}
+
+
+funcMXCheck(){
+	local _domain=${_DOMAIN}
+	echo "MX Record für $_domain:"
+        dig +noall +answer +short mx ${_domain} | cut -d " " -f2
+	echo "SPF Record für $_domain:"
+        dig +noall +answer +short txt ${_domain} | grep -i  spf
+}
+
+funcBlacklist(){
+	local _domain=${_DOMAIN}
+	echo "hier sollte die Blacklist für $_domain gecheckt werden"
+}
+
+funcCheckAll(){
+	local _domain=${_DOMAIN}
+	echo "hier sollte Blacklist und MX für $_domain gecheckt werden"
 }
 
 
@@ -70,11 +84,13 @@ funcHelp() {
 ### GETOPTS - TOOL OPTIONS  ###
 ###############################
 
-while getopts "d:hb" opt; do
+while getopts "d:hbm" opt; do
 	case ${opt} in
         	h) funcHelp; exit 1;;
 		d) _DOMAIN="$OPTARG"; _CHECKARG1=1;;
 		b) funcBlacklist; exit 1;;
+		m) funcMXCheck; exit 1;;
+		a) funcCheckAll; exti 1;;
 		*) funcHelp; exit 1;;
   	esac
 	done
@@ -87,58 +103,10 @@ if [ "${_CHECKARG1}" == "" ]; then
 	exit 1
 fi
 
-
-###############
-### COLORS  ###
-###############
-
-#Colors directly in the script.
-#if [[ ${_COLORS} -eq 1 ]]; then
-#	cOFF=''
-#	rON=''
-#	gON=''
-#	yON=''
-#else
-#	cOFF='\e[39m'	  #color OFF / Default color
-#	rON='\e[31m'	  #red color ON
-#	gON='\e[32m'	  #green color ON
-#	yON='\e[33m'	  #yellow color ON
-#fi
-
-
-#As color library.
-#. colors.sh
-
-
-############################
-#### your cool functions ###
-############################
-
-# My function for ...
-# Naming convention for functions funcFunctionname() - z.B. funcMycheck()
-
-funcMXspf(){
-	local _domain=${1}
-        dig +noall +answer +short mx ${_domain} | cut -d " " -f2
-        dig +noall +answer +short txt ${_domain} | grep -i  spf
-}
-
-
-
-############
-### MAIN ###
-############
-
-echo ""
-echo "####################################"
-echo "####  Blacklist Checker GPLv3	####"
-echo "####  Group1 HFI3913		####"
-echo "####################################"
-echo ""
-
-if [ "${_CHECKARG1}" == "1" ]; then        #For one argument
-	funcMXspf $_DOMAIN
+if [ "${_CHECKARG1}" == 1 ]; then
+	funcMXCheck
 	echo ""
 fi
+
 
 ################### END ###################
