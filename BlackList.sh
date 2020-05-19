@@ -46,6 +46,7 @@ _TIME=$(date +%d.%m.%Y-%H:%M)
 funcHelp() {
 	echo ""
 	echo "####################  HELP  ####################"
+	echo ""
 	echo "*********************************"
 	echo "MX Record and Blacklist Checker"
 	echo "GPLv3"
@@ -63,20 +64,47 @@ funcHelp() {
 
 funcMXCheck(){
 	local _domain=${_DOMAIN}
+	local _mxrecord=`dig +noall +answer +short mx ${_domain} | cut -d " " -f2`
+	echo "*********************************************************"
 	echo "MX Record für $_domain:"
         dig +noall +answer +short mx ${_domain} | cut -d " " -f2
+	echo ""
+	echo "*********************************************************"
+	echo "IP für $_mxrecord:"
+	dig +noall +answer +short ${_mxrecord}
+	echo ""
+	echo "*********************************************************"
 	echo "SPF Record für $_domain:"
-        dig +noall +answer +short txt ${_domain} | grep -i  spf
+        dig +noall +answer +short txt ${_domain} | grep -i spf
+	echo ""
 }
 
 funcBlacklist(){
 	local _domain=${_DOMAIN}
-	echo "hier sollte die Blacklist für $_domain gecheckt werden"
+	local _mxrecord=`dig +noall +answer +short mx ${_domain} | cut -d " " -f2`
+	local i
+	#local _ip=`dig +noall +answer +short ${_mxrecord}`
+	dig +noall +answer +short ${_mxrecord} > ip.tmp
+	read -d '' -a _ip < ip.tmp
+	
+	if [ "${#_ip[*]}" -gt 1 ]; then
+		for ((i=0; i<${#_ip[*]}; i++))
+		do
+			_result=$(wget -q -O- --post-data="host=${_ip[$i]}" https://urlhaus-api.abuse.ch/v1/host/)
+			echo "*********************************************************"
+			echo "Query-Resultat für ${_domain} / ${_ip[$i]}"
+			echo ${_result}
+			echo ""
+		done
+	fi	
+
+
 }
 
 funcCheckAll(){
 	local _domain=${_DOMAIN}
-	echo "hier sollte Blacklist und MX für $_domain gecheckt werden"
+	funcMXCheck
+	funcBlacklist
 }
 
 
@@ -84,19 +112,20 @@ funcCheckAll(){
 ### GETOPTS - TOOL OPTIONS  ###
 ###############################
 
-while getopts "d:hbm" opt; do
+while getopts "d:hbma" opt; do
 	case ${opt} in
         	h) funcHelp; exit 1;;
 		d) _DOMAIN="$OPTARG"; _CHECKARG1=1;;
 		b) funcBlacklist; exit 1;;
 		m) funcMXCheck; exit 1;;
-		a) funcCheckAll; exti 1;;
+		a) funcCheckAll; exit 1;;
 		*) funcHelp; exit 1;;
   	esac
 	done
 
-#Check if _CHECKARG1 or/and _CHECKARG2 is set
+#Check if _CHECKARG1 is set
 if [ "${_CHECKARG1}" == "" ]; then
+	echo ""
 	echo "**No argument set**"
 	echo ""
 	funcHelp
