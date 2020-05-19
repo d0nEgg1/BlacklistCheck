@@ -55,7 +55,7 @@ funcHelp() {
 	echo "Usage: "
 	echo "	./Blacklist.sh -d <DOMAIN> -b -> Blacklist Check"
 	echo "	./Blacklist.sh -d <DOMAIN> -m -> MX and SPF Record Check"
-	echo "	./Blacklist.sh -d <DOMAIN> -> ????"
+	echo "	./Blacklist.sh -d <DOMAIN> -a -> Blacklist and MX Record Check combined"
 	echo ""
 	echo "####################  /HELP  ##################"
 	echo ""
