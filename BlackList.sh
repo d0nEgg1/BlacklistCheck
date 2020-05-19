@@ -96,9 +96,12 @@ funcBlacklist(){
 			echo ${_result}
 			echo ""
 		done
-	fi	
-
-
+	else
+		echo "MX Record nicht RFC XXX konform"
+	fi
+	#DEBUG
+	#_resultDEBUGG=$(wget -q -O- --post-data="host=${_mxrecord}" https://urlhaus-api.abuse.ch/v1/host/)
+	#echo ${_resultDEBUGG}
 }
 
 funcCheckAll(){
