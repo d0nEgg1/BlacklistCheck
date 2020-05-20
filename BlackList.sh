@@ -1,8 +1,8 @@
 #!/bin/bash
-
+# GPLv3
 # Gruppe1 - Mike, Joel, Matthias, Luca <NR>
 # Basic Script to Check MX/SPF Record of any given domain or/and if the given domain is on a blacklist
-
+#GIT: https://github.com/d0nEgg1/BlacklistCheck
 
 #######################
 ### Preparing tasks ###
@@ -48,14 +48,14 @@ funcHelp() {
 	echo "####################  HELP  ####################"
 	echo ""
 	echo "*********************************"
-	echo "MX Record and Blacklist Checker"
+	echo "MX Record and Malware Checker"
 	echo "GPLv3"
 	echo "*********************************"
 	echo ""
 	echo "Usage: "
-	echo "	./Blacklist.sh -d <DOMAIN> -b -> Blacklist Check"
+	echo "	./Blacklist.sh -d <DOMAIN> -b -> Malware Check"
 	echo "	./Blacklist.sh -d <DOMAIN> -m -> MX and SPF Record Check"
-	echo "	./Blacklist.sh -d <DOMAIN> -a -> Blacklist and MX Record Check combined"
+	echo "	./Blacklist.sh -d <DOMAIN> -a -> Malware and MX Record Check combined"
 	echo ""
 	echo "####################  /HELP  ##################"
 	echo ""

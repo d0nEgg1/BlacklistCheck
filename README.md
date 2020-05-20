@@ -2,13 +2,13 @@
 
 
 *********************************
- MX Record and Blacklist Checker
+ MX Record and Malware Checker
  GPLv3
 *********************************
 
  Usage:
 
-   ./Blacklist.sh -d \<DOMAIN\> -b -> Blacklist Check
+   ./Blacklist.sh -d \<DOMAIN\> -b -> Malware Check
 
    ./Blacklist.sh -d \<DOMAIN\> -m -> MX and SPF Record Check
 
