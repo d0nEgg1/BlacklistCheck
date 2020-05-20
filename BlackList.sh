@@ -20,7 +20,7 @@ funcCheckProg() {
 	local _count
 	local _i
 
-	_program=(vi)
+	_program=(vi jq)
 	for _i in "${_program[@]}"; do
 		if [ -z $(command -v ${_i}) ]; then
 			echo "${_i} is not installed."
@@ -82,19 +82,30 @@ funcMXCheck(){
 funcBlacklist(){
 	local _domain=${_DOMAIN}
 	local _mxrecord=`dig +noall +answer +short mx ${_domain} | cut -d " " -f2`
-	local i
+	local _i
+	local _red="\033[1;31m"
+	local _green="\033[1;32m"
+	local _nocolor="\033[0m"
 	#local _ip=`dig +noall +answer +short ${_mxrecord}`
 	dig +noall +answer +short ${_mxrecord} > ip.tmp
 	read -d '' -a _ip < ip.tmp
 	
 	if [ "${#_ip[*]}" -gt 1 ]; then
-		for ((i=0; i<${#_ip[*]}; i++))
+		for ((_i=0; _i<${#_ip[*]}; _i++))
 		do
-			_result=$(wget -q -O- --post-data="host=${_ip[$i]}" https://urlhaus-api.abuse.ch/v1/host/)
-			echo "*********************************************************"
-			echo "Query-Resultat für ${_domain} / ${_ip[$i]}"
-			echo ${_result}
-			echo ""
+			_result=$(wget -q -O- --post-data="host=${_ip[$_i]}" https://urlhaus-api.abuse.ch/v1/host/)
+			_resultFormat=$(echo ${_result} | jq '.query_status')
+			if [ "${_resultFormat}" == "\"no_results\"" ]; then
+				echo "*********************************************************"
+				echo "Query-Resultat für ${_domain} / ${_ip[$_i]}"
+				echo -e "${_green}OK${_nocolor}"
+				echo ""
+			else
+				echo "*********************************************************"
+				echo "Query-Resultat für ${_domain} / ${_ip[$_i]}"
+				echo -e "${_red}NOK!${_nocolor}"
+				echo ""
+			fi
 		done
 	else
 		echo "MX Record nicht RFC XXX konform"
